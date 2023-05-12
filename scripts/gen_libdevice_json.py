@@ -57,20 +57,15 @@ type_map = {
 
 for match in matches:
     sig_txt = match.group(2).strip()
-    sig = {}
     return_ty = type_map[re.search(".*(?= @)", sig_txt).group()]
-    params = []
-    for param in re.finditer("(\w+\*?)(?= %) %(\w+)", sig_txt):
-        params.append(
-            {
-                "name": param.group(2).strip(),
-                "type": type_map[param.group(1).strip()]
-            }
-        )
-
-    sig["params"] = params
-    sig["returns"] = return_ty
-
+    params = [
+        {
+            "name": param.group(2).strip(),
+            "type": type_map[param.group(1).strip()],
+        }
+        for param in re.finditer("(\w+\*?)(?= %) %(\w+)", sig_txt)
+    ]
+    sig = {"params": params, "returns": return_ty}
     intrinsics.append(
         {
             "name": match.group(1).strip(),
